@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrowing;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Book;
 
@@ -42,10 +43,8 @@ class BorrowingController extends Controller
         ]);
     }
 
-   public function returnBook(Request $request, int $id)
+   public function returnBook(Request $request, Borrowing $borrowing): JsonResponse
    {
-        $borrowing = Borrowing::findOrFail($id);
-
         if ($borrowing->returned_at) {
             return response()->json([
                 'message' => 'Book already returned'
