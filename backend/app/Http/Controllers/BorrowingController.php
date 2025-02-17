@@ -23,7 +23,7 @@ class BorrowingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'book_id' => 'required|string|exists:books,id',
+            'book_id' => 'required|integer|exists:books,id',
         ]);
 
         $book = Book::findOrFail($request->book_id);
