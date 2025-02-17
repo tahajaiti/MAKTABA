@@ -11,15 +11,15 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        return Book::all();
+        return response()->json(Book::all(), 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): Book
+    public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
             'title' => 'required|string|max:255|min:3',
@@ -28,21 +28,31 @@ class BookController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        return Book::create($data);
+        $book = Book::create($data);
+
+        return response()->json($book, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        return Book::find($id);
+        $book = Book::find($id);
+
+        if (!$book) {
+            return response()->json([
+                'message' => 'Book not found'
+            ], 404);
+        }
+
+        return response()->json($book, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         $request->validate([
            'title' => 'string|max:255|min:3',
@@ -60,7 +70,8 @@ class BookController extends Controller
         }
 
         $book->update($request->all());
-        return $book;
+
+        return response()->json($book, 200);
     }
 
     /**
@@ -76,7 +87,7 @@ class BookController extends Controller
             ], 404);
         }
 
-        Book::destroy($id);
+        $book->delete();
 
         return response()->json([
            'message' => 'Book deleted successfully'
