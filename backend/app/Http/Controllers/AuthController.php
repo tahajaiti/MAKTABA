@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +20,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed'
         ]);
 
-        $role = Role::createOrFirst(['name' => 'user']);
+        $role = Role::firstOrCreate(['name' => 'user']);
 
         $user = User::create([
             'name' => $request->name,
@@ -33,8 +34,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user,
-            'role' => $user->role()->first()->name
+            'user' => new UserResource($request->user())
         ], 201);
     }
 
@@ -58,8 +58,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user,
-            'role' => $user->role()->first()->name
+            'user' => new UserResource($request->user())
         ]);
 
     }
@@ -75,9 +74,6 @@ class AuthController extends Controller
 
     public function profile(Request $request): JsonResponse
     {
-        return response()->json([
-            'user' => $request->user(),
-            'role' => $request->user()->role()->first()->name
-        ]);
+        return response()->json([new UserResource($request->user())]);
     }
 }
