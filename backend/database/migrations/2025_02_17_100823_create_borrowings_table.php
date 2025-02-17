@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('book_id')->constrained('books')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->timestamp('borrowed_at')->useCurrent();
-            $table->timestamp('returned_at')->nullable();
+            $table->timestamp('borrow_date')->useCurrent();
+            $table->timestamp('return_date')->nullable();
             $table->timestamps();
 
             $table->index(['book_id', 'user_id']);

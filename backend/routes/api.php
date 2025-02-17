@@ -15,6 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('books', BookController::class);
 
     Route::get('borrowings', [BorrowingController::class, 'index'])->name('borrowings.index');
-    Route::post('borrow', [BorrowingController::class, 'store'])->name('borrowings.store');
+    Route::post('borrow/{book}', [BorrowingController::class, 'store'])->name('borrowings.store');
     Route::patch('return/{borrowing}', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
 });

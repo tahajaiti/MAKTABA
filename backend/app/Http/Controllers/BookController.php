@@ -52,6 +52,13 @@ class BookController extends Controller
         ]);
 
         $book = Book::find($id);
+
+        if (!$book) {
+            return response()->json([
+                'message' => 'Book not found'
+            ], 404);
+        }
+
         $book->update($request->all());
         return $book;
     }
@@ -61,6 +68,14 @@ class BookController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
+        $book = Book::find($id);
+
+        if (!$book) {
+            return response()->json([
+                'message' => 'Book not found'
+            ], 404);
+        }
+
         Book::destroy($id);
 
         return response()->json([

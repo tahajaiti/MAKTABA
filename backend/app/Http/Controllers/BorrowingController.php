@@ -20,14 +20,8 @@ class BorrowingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Book $book)
     {
-        $request->validate([
-            'book_id' => 'required|integer|exists:books,id',
-        ]);
-
-        $book = Book::findOrFail($request->book_id);
-
         if ($book->quantity < 1){
             return response()->json([
                 'message' => 'Book is out of stock'
@@ -38,27 +32,27 @@ class BorrowingController extends Controller
 
         return Borrowing::create([
             'user_id' => $request->user()->id,
-            'book_id' => $request->book_id,
+            'book_id' => $book->id,
             'borrowed_at' => now(),
         ]);
     }
 
-   public function returnBook(Request $request, Borrowing $borrowing): JsonResponse
+   public function returnBook(Borrowing $borrowing): JsonResponse
    {
-        if ($borrowing->returned_at) {
-            return response()->json([
-                'message' => 'Book already returned'
-            ], 400);
-        }
+       if ($borrowing->return_date) {
+           return response()->json([
+               'message' => 'Book already returned'
+           ], 400);
+       }
 
-        $borrowing->update(['returned_at' => now()]);
+       $borrowing->update(['return_date' => now()]);
 
-        $book = Book::findOrFail($borrowing->book_id);
+       if ($borrowing->book){
+           $borrowing->book->increment('quantity');
+       }
 
-        $book->increment('quantity');
-
-        return response()->json([
+       return response()->json([
            'message' => 'Book returned successfully'
-        ]);
+       ], 200);
    }
 }
