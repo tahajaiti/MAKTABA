@@ -1,14 +1,18 @@
-import React from 'react'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
-
-const Layout: React.FC<{children: React.ReactNode}> = ({ children }) => {
+const Layout: React.FC = () => {
   return (
     <>
-      <Navbar/>
-      <main>{children}</main>
+      <Navbar />
+      <main className="min-h-[84vh]">
+        <Outlet/>
+      </main>
+      <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
