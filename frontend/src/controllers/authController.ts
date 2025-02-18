@@ -18,6 +18,7 @@ const useAuthController = () => {
             const response = await authService.login({ email, password });
             setAuthData(response.data as Response<AuthData>);
             localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+            localStorage.setItem('user', JSON.stringify(response.data.data?.user));
             navigate('/');
         } catch (err: unknown) {
             if (err instanceof Error && 'email' in err) {
@@ -40,6 +41,7 @@ const useAuthController = () => {
             const response = await authService.register({ name, email, password, password_confirmation });
             setAuthData(response.data as Response<AuthData>);
             localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+            localStorage.setItem('user', JSON.stringify(response.data.data?.user));
             navigate('/');
         } catch (err: unknown) {
             setError('Registration failed' + err);
@@ -52,6 +54,7 @@ const useAuthController = () => {
         await authService.logout();
         setAuthData(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         navigate('/login');
     }
 
