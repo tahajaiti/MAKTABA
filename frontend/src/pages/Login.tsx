@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
 
+
+
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -9,8 +12,6 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailErr, setEmailErr] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
-
-
 
   const validatePassword = (pass: string) => {
     if (pass.length < 8) {
