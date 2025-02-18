@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
@@ -31,16 +32,16 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => new UserResource($request->user())
-        ], 201);
+        ], 'User registered successfully', 201);
     }
 
     public function login(Request $request): JsonResponse
     {
-        $data = $request->validate([
+        $request->validate([
             'email' => 'required|string|email|max:255|exists:users',
             'password' => 'required|string|min:8'
         ]);
@@ -55,11 +56,11 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => new UserResource($request->user())
-        ]);
+        ], 'Logged in successfully');
 
     }
 
@@ -67,13 +68,11 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Successfully logged out',
-        ]);
+        return ApiResponse::success(null, 'Logged out successfully');
     }
 
     public function profile(Request $request): JsonResponse
     {
-        return response()->json([new UserResource($request->user())]);
+        return ApiResponse::success(new UserResource($request->user()), 'User profile');
     }
 }

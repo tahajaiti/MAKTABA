@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,16 +22,16 @@ class BookController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $data = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255|min:3',
             'author' => 'required|string|max:255|min:3',
             'cover' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $book = Book::create($data);
+        $book = Book::create($request->validated());
 
-        return response()->json($book, 201);
+        return ApiResponse::success($book, 'Book created successfully', 201);
     }
 
     /**
@@ -41,12 +42,10 @@ class BookController extends Controller
         $book = Book::find($id);
 
         if (!$book) {
-            return response()->json([
-                'message' => 'Book not found'
-            ], 404);
+            return ApiResponse::error('Book does not exist', 404);
         }
 
-        return response()->json($book, 200);
+        return ApiResponse::success($book);
     }
 
     /**
@@ -64,14 +63,12 @@ class BookController extends Controller
         $book = Book::find($id);
 
         if (!$book) {
-            return response()->json([
-                'message' => 'Book not found'
-            ], 404);
+            return ApiResponse::error('Book does not exist', 404);
         }
 
         $book->update($request->all());
 
-        return response()->json($book, 200);
+        return ApiResponse::success($book, 'Book updated successfully');
     }
 
     /**
@@ -82,15 +79,11 @@ class BookController extends Controller
         $book = Book::find($id);
 
         if (!$book) {
-            return response()->json([
-                'message' => 'Book not found'
-            ], 404);
+            return ApiResponse::error('Book does not exist', 404);
         }
 
         $book->delete();
 
-        return response()->json([
-           'message' => 'Book deleted successfully'
-        ]);
+        return ApiResponse::success(null, 'Book deleted successfully', 204);
     }
 }
