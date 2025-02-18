@@ -18,11 +18,11 @@ const useAuthController = () => {
         setError(null);
         try {
             const response = await authService.login({ email, password });
-            if (response.data.data){
+            if (response.data.data) {
                 setAuthData(response.data as Response<AuthData>);
                 login(response.data.data.access_token || '');
             }
-            
+
             navigate('/');
         } catch (err: unknown) {
             if (err instanceof Error && 'email' in err) {

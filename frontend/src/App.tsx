@@ -1,6 +1,6 @@
 import React from 'react'
-import { AuthProvider } from './contexts/auth';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GlobalProvider } from './contexts/GlobalProvider';
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
 import Books from './pages/Books';
@@ -12,7 +12,7 @@ import Register from './pages/Register';
 const App: React.FC = () => {
 
   return (
-    <AuthProvider>
+    <GlobalProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -24,7 +24,7 @@ const App: React.FC = () => {
           <Route path="register" element={<Register />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+    </GlobalProvider>
   )
 }
 
