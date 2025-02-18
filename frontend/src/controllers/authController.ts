@@ -40,7 +40,8 @@ const useAuthController = () => {
                 setError('Login failed, please try again');
             }
         } catch (err: unknown) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.log(err);
+            setError(err.message || 'Invalid credentials');
         } finally {
             setLoading(false);
         }
@@ -76,7 +77,7 @@ const useAuthController = () => {
                 setError('Registering failed, please try again');
             }
         } catch (err: unknown) {
-            setError(err.response?.data?.message || 'Register failed');
+            setError(err.message || 'Register failed');
         } finally {
             setLoading(false);
         }

@@ -53,6 +53,8 @@ apiClient.interceptors.response.use(
 
         const { status, data } = error.response;
 
+        console.log(data);
+
         // Handle different error status codes
         switch (status) {
             case 401: // Unauthorized

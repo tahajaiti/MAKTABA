@@ -1,142 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
-import video from '../assets/login_vid.mp4';
-import useAuthController from '../controllers/authController';
-import Loading from '../components/Loading';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import useAuthController from "../controllers/authController";
+import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
+import video from "../assets/login_vid.mp4";
+import Loading from "../components/Loading";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [emailErr, setEmailErr] = useState('');
-  const [passwordErr, setPasswordErr] = useState('');
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
 
   const { handleLogin, loading, error } = useAuthController();
 
-  const validatePassword = (pass: string) => {
-    if (pass.length < 8) {
-      setPasswordErr('Password must be at least 8 characters');
-      return false;
-    } else {
-      setPasswordErr('');
-      return true;
-    }
-  };
-
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailErr('Please enter a valid email address.');
-      return false;
-    } else {
-      setEmailErr('');
-      return true;
-    }
+    return emailRegex.test(email) ? "" : "Please enter a valid email.";
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const validatePassword = (password: string) => {
+    return password.length >= 8 ? "" : "Password must be at least 8 characters.";
   };
 
-  useEffect(() => {
-    if (isFormValid) {
-      handleLogin(email, password);
-      setIsFormValid(false);      
-    }
-  }, [isFormValid, email, password, handleLogin]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCredentials((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
+    const emailErr = validateEmail(credentials.email);
+    const passwordErr = validatePassword(credentials.password);
 
-    if (isEmailValid && isPasswordValid) {
-      setIsFormValid(true);
+    if (!emailErr && !passwordErr) {
+      handleLogin(credentials.email, credentials.password);
+    } else {
+      setErrors({ email: emailErr, password: passwordErr });
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
-      {loading && <Loading/>}
-      {/* Left side*/}
+      {loading && <Loading />}
+
+      {/* Left Side */}
       <div className="w-3/5 flex items-center justify-center">
-        <video
-          className="h-full w-full object-cover"
-          src={video}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        <video className="h-full w-full object-cover" src={video} autoPlay muted loop playsInline />
       </div>
 
-      {/* Right side */}
+      {/* Right Side */}
       <div className="w-2/5 bg-white flex flex-col justify-center p-12">
         <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Log in to MAKTABA</h2>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-4 mx-auto font-medium">{error}</p>}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <div className="relative">
               <input
                 id="email"
                 name="email"
                 type="email"
-                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  validateEmail(e.target.value);
-                }}
+                value={credentials.email}
+                onChange={handleChange}
+                onBlur={() => setErrors((prev) => ({ ...prev, email: validateEmail(credentials.email) }))}
               />
               <FaEnvelope className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
-            {emailErr && <p className="text-red-500 text-sm mt-1">{emailErr}</p>}
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
+          {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <div className="relative">
               <input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                required
-                value={password}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="Enter your password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  validatePassword(e.target.value);
-                }}
+                value={credentials.password}
+                onChange={handleChange}
               />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            {passwordErr && <p className="text-red-500 text-sm mt-1">{passwordErr}</p>}
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-          >
-            Sign in
-          </button>
+          <button type="submit" className="w-full py-2 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-md">Sign in</button>
         </form>
 
         <div className="mt-6 text-center">
