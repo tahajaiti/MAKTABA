@@ -1,61 +1,126 @@
-import axios from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+
+interface LaravelValidationError {
+    message: string;
+    errors: Record<string, string[]>;
+}
+
+interface LaravelApiError {
+    message: string;
+    errors?: Record<string, string[]>;
+    exception?: string;
+}
+
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api';
 
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api',
+    baseURL: API_URL,
     timeout: 60000,
     withCredentials: true,
-    xsrfCookieName: "XSRF-TOKEN",
-    xsrfHeaderName: "X-XSRF-TOKEN",
     headers: {
-        "Accept": "application/json",
-        "Content-Type": 'application/json',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
     }
 });
 
-
-//request interceptors to add the token to the request headers
 apiClient.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
+
         const token = localStorage.getItem('token');
         if (token) {
-            config.headers = config.headers || {};
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
-    (error) => {
+    (error: AxiosError) => {
         return Promise.reject(error);
     }
 );
 
 apiClient.interceptors.response.use(
-    (Response) => Response,
-    (Error) => {
-        if (!Error.response){
-            return Promise.reject({message: 'Network Error'});
+    (response: AxiosResponse) => {
+        return response;
+    },
+    (error: AxiosError<LaravelApiError>) => {
+        // Handle network errors
+        if (!error.response) {
+            return Promise.reject({
+                message: 'Network error - please check your connection',
+                status: 'network_error'
+            });
         }
 
-        const {status, data} = Error.response;
+        const { status, data } = error.response;
 
-        if (status === 401){
-            console.log('unauthorized');
+        // Handle different error status codes
+        switch (status) {
+            case 401: // Unauthorized
+                localStorage.removeItem('token');
+                window.location.replace('/login');
+                return Promise.reject({
+                    message: 'Session expired - please log in again',
+                    status: 'unauthorized'
+                });
 
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+            case 403: // Forbidden
+                return Promise.reject({
+                    message: data?.message || 'You do not have permission to perform this action',
+                    status: 'forbidden'
+                });
+
+            case 404: // Not Found
+                return Promise.reject({
+                    message: data?.message || 'The requested resource was not found',
+                    status: 'not_found'
+                });
+
+            case 422: { // Validation Error
+                const validationError = error.response.data as LaravelValidationError;
+                return Promise.reject({
+                    message: validationError.message || 'Validation failed',
+                    errors: validationError.errors,
+                    status: 'validation_error'
+                });
+            }
+            case 429: // Too Many Requests
+                return Promise.reject({
+                    message: 'Too many requests - please try again later',
+                    status: 'rate_limited'
+                });
+
+            case 500: // Server Error
+                return Promise.reject({
+                    message: 'An unexpected error occurred - please try again later',
+                    status: 'server_error',
+                    error: data
+                });
+
+            default:
+                return Promise.reject({
+                    message: data?.message || 'An unexpected error occurred',
+                    status: 'unknown_error',
+                    error: data
+                });
         }
-
-        if (status === 422){
-            console.log("Validation Error:", data.errors);
-            return Promise.reject(data.errors); 
-        }
-
-        if (status === 500) {
-            console.error("Server Error:", data);
-            return Promise.reject({ message: "Something went wrong on the server." });
-        }
-
-        return Promise.reject(data);
     }
-)
+);
 
-export default apiClient;
+export const api = {
+    get: <T>(url: string, config = {}) =>
+        apiClient.get<T>(url, config),
+
+    post: <T>(url: string, data = {}, config = {}) =>
+        apiClient.post<T>(url, data, config),
+
+    put: <T>(url: string, data = {}, config = {}) =>
+        apiClient.put<T>(url, data, config),
+
+    patch: <T>(url: string, data = {}, config = {}) =>
+        apiClient.patch<T>(url, data, config),
+
+    delete: <T>(url: string, config = {}) =>
+        apiClient.delete<T>(url, config)
+};
+
+export default api;

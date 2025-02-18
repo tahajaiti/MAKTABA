@@ -14,14 +14,15 @@ const useAuthController = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await authService.login({email, password});
+            const response = await authService.login({ email, password });
             setAuthData(response.data as Response<AuthData>);
-        } catch (err: unknown){
-            if (err instanceof Error && 'email' in err){
+            localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+        } catch (err: unknown) {
+            if (err instanceof Error && 'email' in err) {
                 setError('Invalid email');
             }
 
-            if (err instanceof Error && 'password' in err){
+            if (err instanceof Error && 'password' in err) {
                 setError('Invalid password');
             }
             setError('Login failed, Invalid credentials');
@@ -34,9 +35,10 @@ const useAuthController = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await authService.register({name, email, password, password_confirmation});
+            const response = await authService.register({ name, email, password, password_confirmation });
             setAuthData(response.data as Response<AuthData>);
-        } catch (err: unknown){
+            localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+        } catch (err: unknown) {
             setError('Registration failed' + err);
         } finally {
             setLoading(false);
@@ -46,6 +48,7 @@ const useAuthController = () => {
     const logout = async () => {
         await authService.logout();
         setAuthData(null);
+        localStorage.removeItem('token');
     }
 
     return {

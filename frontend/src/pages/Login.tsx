@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
 import useAuthController from '../controllers/authController';
-
-
-
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,23 +9,28 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailErr, setEmailErr] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const {login, loading, error} = useAuthController();
+  const { login, loading, error } = useAuthController();
 
   const validatePassword = (pass: string) => {
     if (pass.length < 8) {
       setPasswordErr('Password must be at least 8 characters');
+      return false;
     } else {
       setPasswordErr('');
+      return true;
     }
-  }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailErr('Please enter a valid email address.');
+      return false;
     } else {
       setEmailErr('');
+      return true;
     }
   };
 
@@ -36,21 +38,22 @@ const Login: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    if (isFormValid) {
+      login(email, password);
+      setIsFormValid(false);      
+    }
+  }, [isFormValid, email, password, login]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setEmailErr('Please fill email field');
-      setPasswordErr('Please fill password field');
-      return;
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (isEmailValid && isPasswordValid) {
+      setIsFormValid(true);
     }
-
-    console.log('Logging in...');
-    
-
-    login(email, password);
-    
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
