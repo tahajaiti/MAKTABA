@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Books from './pages/Books';
 import About from './pages/About';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 
 const App: React.FC = () => {
@@ -18,6 +19,7 @@ const App: React.FC = () => {
           <Route path="about" element={<About />} />
         </Route>
           <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   )

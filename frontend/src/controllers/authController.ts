@@ -2,13 +2,14 @@ import { useState } from "react";
 import authService from "../services/authService";
 import AuthData from "../types/Auth";
 import Response from "../types/Response";
+import { useNavigate } from "react-router-dom";
 
 
 const useAuthController = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [authData, setAuthData] = useState<Response<AuthData> | null>(null);
-
+    const navigate = useNavigate();
 
     const login = async (email: string, password: string) => {
         setLoading(true);
@@ -17,6 +18,7 @@ const useAuthController = () => {
             const response = await authService.login({ email, password });
             setAuthData(response.data as Response<AuthData>);
             localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+            navigate('/');
         } catch (err: unknown) {
             if (err instanceof Error && 'email' in err) {
                 setError('Invalid email');
@@ -38,6 +40,7 @@ const useAuthController = () => {
             const response = await authService.register({ name, email, password, password_confirmation });
             setAuthData(response.data as Response<AuthData>);
             localStorage.setItem('token', JSON.stringify(response.data.data?.access_token));
+            navigate('/');
         } catch (err: unknown) {
             setError('Registration failed' + err);
         } finally {
@@ -49,6 +52,7 @@ const useAuthController = () => {
         await authService.logout();
         setAuthData(null);
         localStorage.removeItem('token');
+        navigate('/login');
     }
 
     return {

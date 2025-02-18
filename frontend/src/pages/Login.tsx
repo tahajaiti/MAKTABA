@@ -3,6 +3,7 @@ import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
 import useAuthController from '../controllers/authController';
 import Loading from '../components/Loading';
+import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -141,9 +142,9 @@ const Login: React.FC = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <a href="#" className="font-medium text-amber-600 hover:text-amber-500">
+            <Link to='/register' className="font-medium text-amber-600 hover:text-amber-500">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
