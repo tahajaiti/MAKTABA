@@ -1,5 +1,7 @@
+import AuthData from "../../types/Auth";
+
 export interface AuthContextType {
     isLogged: boolean;
-    login: (token: string) => void;
+    login: (data: AuthData) => void;
     logout: () => void;
 }

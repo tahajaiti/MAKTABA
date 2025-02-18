@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
+import AuthData from '../../types/Auth';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -9,13 +10,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLogged(!!token);
     }, []);
 
-    const login = (token: string) => {
-        localStorage.setItem('token', token);
+    const login = (data: AuthData) => {
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         setIsLogged(true);
     };
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setIsLogged(false);
     };
 
