@@ -6,11 +6,11 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [emailErr, setEmailErr] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
+
+
 
   const validatePassword = (pass: string) => {
     if (pass.length < 8) {
@@ -29,10 +29,20 @@ const Login: React.FC = () => {
     }
   };
 
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setErr('Please fill in all fields');
+      return;
+    }
+
+    // login({email, password});
+  } 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
@@ -51,7 +61,8 @@ const Login: React.FC = () => {
       {/* Right side */}
       <div className="w-2/5 bg-white flex flex-col justify-center p-12">
         <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Log in to MAKTABA</h2>
-        <form className="space-y-6">
+        {err && <p className="text-red-500 text-sm mb-4">{err}</p>}
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email
