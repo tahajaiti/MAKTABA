@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const [passwordErr, setPasswordErr] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const { login, loading, error } = useAuthController();
+  const { handleLogin, loading, error } = useAuthController();
 
   const validatePassword = (pass: string) => {
     if (pass.length < 8) {
@@ -42,10 +42,10 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (isFormValid) {
-      login(email, password);
+      handleLogin(email, password);
       setIsFormValid(false);      
     }
-  }, [isFormValid, email, password, login]);
+  }, [isFormValid, email, password, handleLogin]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
