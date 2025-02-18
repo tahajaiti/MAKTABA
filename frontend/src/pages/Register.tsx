@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEnvelope, FaEye, FaEyeSlash, FaUser } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
@@ -6,83 +6,57 @@ import useAuthController from '../controllers/authController';
 import Loading from '../components/Loading';
 
 const Register: React.FC = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [creds, setCreds] = useState({ name: '', email: '', password: '', password_confirmation: '' });
     const [showPassword, setShowPassword] = useState(false);
-    const [nameErr, setNameErr] = useState('');
-    const [emailErr, setEmailErr] = useState('');
-    const [passwordErr, setPasswordErr] = useState('');
-    const [confirmPasswordErr, setConfirmPasswordErr] = useState('');
-    const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState({ name: '', email: '', password: '', password_confirmation: '' });
 
     const { register, loading, error } = useAuthController();
 
     const validateName = (name: string) => {
         const nameRegex = /^[A-Za-z\s]+$/;
         if (!nameRegex.test(name)) {
-            setNameErr('Name can only contain alphabets and spaces');
-            return false;
+            return 'Name can only contain alphabets and spaces';
         } else if (name.length < 4) {
-            setNameErr('Name must be at least 4 characters long');
-            return false;
+            return 'Name must be at least 4 characters long';
         } else {
-            setNameErr('');
-            return true;
+            return '';
         }
     };
 
     const validatePassword = (pass: string) => {
-        if (pass.length < 8) {
-            setPasswordErr('Password must be at least 8 characters');
-            return false;
-        } else {
-            setPasswordErr('');
-            return true;
-        }
+        return pass.length >= 8 ? "" : "Password must be at least 8 characters.";
     };
 
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setEmailErr('Please enter a valid email address.');
-            return false;
-        } else {
-            setEmailErr('');
-            return true;
-        }
+        return emailRegex.test(email) ? "" : "Please enter a valid email.";
     };
 
     const validateConfirmPassword = (confirmPass: string) => {
-        if (confirmPass !== password) {
-            setConfirmPasswordErr('Passwords do not match');
-            return false;
-        } else {
-            setConfirmPasswordErr('');
-            return true;
-        }
+        return confirmPass === creds.password ? '' : "The passwords don't match";
     };
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setCreds((prev) => ({ ...prev, [name]: value }));
     };
-
-    useEffect(() => {
-        if (isFormValid) {
-            register(name, email, password, confirmPassword);
-            setIsFormValid(false);
-        }
-    }, [isFormValid, name, email, password, confirmPassword, register]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const isEmailValid = validateEmail(email);
-        const isPasswordValid = validatePassword(password);
-        const isConfirmPasswordValid = validateConfirmPassword(confirmPassword);
+        const nameErr = validateName(creds.name);
+        const emailErr = validateEmail(creds.email);
+        const passwordErr = validatePassword(creds.password);
+        const confirmPassErr = validateConfirmPassword(creds.password_confirmation);
 
-        if (isEmailValid && isPasswordValid && isConfirmPasswordValid) {
-            setIsFormValid(true);
+        setErrors({
+            name: nameErr,
+            email: emailErr,
+            password: passwordErr,
+            password_confirmation: confirmPassErr,
+        });
+
+        if (!nameErr && !emailErr && !passwordErr && !confirmPassErr) {
+            register(creds.name, creds.email, creds.password, creds.password_confirmation);
         }
     };
 
@@ -94,7 +68,7 @@ const Register: React.FC = () => {
             <div className="w-2/5 bg-white flex flex-col justify-center p-12">
                 <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Register to MAKTABA</h2>
 
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                {error && <p className="text-red-500 text-sm mb-4 mx-auto text-center">{error}</p>}
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
@@ -109,15 +83,13 @@ const Register: React.FC = () => {
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                 placeholder="Enter your name"
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                    validateName(e.target.value);
-                                }}
+                                value={creds.name}
+                                onChange={handleChange}
+                                onBlur={() => setErrors((prev) => ({ ...prev, name: validateName(creds.name) }))}
                             />
                             <FaUser className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         </div>
-                        {nameErr && <p className="text-red-500 text-sm mt-1">{nameErr}</p>}
+                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                     </div>
 
                     <div>
@@ -132,15 +104,13 @@ const Register: React.FC = () => {
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                 placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    validateEmail(e.target.value);
-                                }}
+                                value={creds.email}
+                                onChange={handleChange}
+                                onBlur={() => setErrors((prev) => ({ ...prev, email: validateEmail(creds.email) }))}
                             />
                             <FaEnvelope className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         </div>
-                        {emailErr && <p className="text-red-500 text-sm mt-1">{emailErr}</p>}
+                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
                     <div>
@@ -153,23 +123,21 @@ const Register: React.FC = () => {
                                 name="password"
                                 type={showPassword ? "text" : "password"}
                                 required
-                                value={password}
+                                value={creds.password}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                 placeholder="Enter your password"
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    validatePassword(e.target.value);
-                                }}
+                                onChange={handleChange}
+                                onBlur={() => setErrors((prev) => ({ ...prev, password: validatePassword(creds.password) }))}
                             />
                             <button
                                 type="button"
-                                onClick={togglePasswordVisibility}
+                                onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
                         </div>
-                        {passwordErr && <p className="text-red-500 text-sm mt-1">{passwordErr}</p>}
+                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                     </div>
 
                     <div>
@@ -182,23 +150,22 @@ const Register: React.FC = () => {
                                 name="password_confirmation"
                                 type={showPassword ? "text" : "password"}
                                 required
-                                value={confirmPassword}
+                                value={creds.password_confirmation}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                 placeholder="Confirm your password"
-                                onChange={(e) => {
-                                    setConfirmPassword(e.target.value);
-                                    validateConfirmPassword(e.target.value);
-                                }}
+                                onChange={handleChange}
+                                onBlur={() => setErrors((prev) =>
+                                    ({ ...prev, password_confirmation: validateConfirmPassword(creds.password_confirmation) }))}
                             />
                             <button
                                 type="button"
-                                onClick={togglePasswordVisibility}
+                                onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
                         </div>
-                        {confirmPasswordErr && <p className="text-red-500 text-sm mt-1">{confirmPasswordErr}</p>}
+                        {errors.password_confirmation && <p className="text-red-500 text-sm mt-1">{errors.password_confirmation}</p>}
                     </div>
 
                     <button

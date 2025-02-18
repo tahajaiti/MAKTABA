@@ -46,7 +46,7 @@ apiClient.interceptors.response.use(
         // Handle network errors
         if (!error.response) {
             return Promise.reject({
-                message: 'Network error - please check your connection',
+                message: 'Network error - The server is currently down please try again later',
                 status: 'network_error'
             });
         }
