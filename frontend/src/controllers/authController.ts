@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import authService from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/auth";
@@ -10,22 +10,42 @@ const useAuthController = () => {
     const navigate = useNavigate();
     const { login, logout } = useAuth();
 
-    const handleLogin = async (email: string, password: string) => {
+    // const handleLogin = async (email: string, password: string) => {
+    //     setLoading(true);
+    //     setError(null);
+    //     try {
+    //         const response = await authService.login({ email, password });
+    //         if (response.data.data) {
+    //             login(response.data.data);
+    //         }
+
+    //         navigate('/');
+    //     } catch (err: unknown) {
+    //         setError('Login failed, Invalid credentials' + err);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
+
+    const handleLogin = useCallback(async (email: string, password: string) => {
         setLoading(true);
         setError(null);
         try {
             const response = await authService.login({ email, password });
-            if (response.data.data) {
+            
+            if (response.data.data){
                 login(response.data.data);
+                navigate('/');
+            } else {
+                setError('Login failed, please try again');
             }
-
-            navigate('/');
         } catch (err: unknown) {
-            setError('Login failed, Invalid credentials' + err);
+            setError(err.response?.data?.message || 'Login failed');
         } finally {
             setLoading(false);
         }
-    }
+    }, [login, navigate])
+
 
     const register = async (name: string, email: string, password: string, password_confirmation: string) => {
         setLoading(true);
