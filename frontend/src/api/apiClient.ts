@@ -7,7 +7,7 @@ const apiClient = axios.create({
     xsrfCookieName: "XSRF-TOKEN",
     xsrfHeaderName: "X-XSRF-TOKEN",
     headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": 'application/json',
     }
 });
@@ -27,5 +27,35 @@ apiClient.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+apiClient.interceptors.response.use(
+    (Response) => Response,
+    (Error) => {
+        if (!Error.response){
+            return Promise.reject({message: 'Network Error'});
+        }
+
+        const {status, data} = Error.response;
+
+        if (status === 401){
+            console.log('unauthorized');
+
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+
+        if (status === 422){
+            console.log("Validation Error:", data.errors);
+            return Promise.reject(data.errors); 
+        }
+
+        if (status === 500) {
+            console.error("Server Error:", data);
+            return Promise.reject({ message: "Something went wrong on the server." });
+        }
+
+        return Promise.reject(data);
+    }
+)
 
 export default apiClient;

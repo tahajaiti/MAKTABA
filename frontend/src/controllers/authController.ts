@@ -1,12 +1,13 @@
 import { useState } from "react";
 import authService from "../services/authService";
 import AuthData from "../types/Auth";
+import Response from "../types/Response";
 
 
 const useAuthController = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [authData, setAuthData] = useState<AuthData | null>(null);
+    const [authData, setAuthData] = useState<Response<AuthData> | null>(null);
 
 
     const login = async (email: string, password: string) => {
@@ -14,9 +15,16 @@ const useAuthController = () => {
         setError(null);
         try {
             const response = await authService.login({email, password});
-            setAuthData(response.data.data as AuthData);
+            setAuthData(response.data as Response<AuthData>);
         } catch (err: unknown){
-            setError('Login failed' + err);
+            if (err instanceof Error && 'email' in err){
+                setError('Invalid email');
+            }
+
+            if (err instanceof Error && 'password' in err){
+                setError('Invalid password');
+            }
+            setError('Login failed, Invalid credentials');
         } finally {
             setLoading(false);
         }
@@ -27,7 +35,7 @@ const useAuthController = () => {
         setError(null);
         try {
             const response = await authService.register({name, email, password, password_confirmation});
-            setAuthData(response.data.data as AuthData);
+            setAuthData(response.data as Response<AuthData>);
         } catch (err: unknown){
             setError('Registration failed' + err);
         } finally {
