@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
 import useAuthController from '../controllers/authController';
+import Loading from '../components/Loading';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -57,6 +58,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
+      {loading && <Loading/>}
       {/* Left side*/}
       <div className="w-3/5 flex items-center justify-center">
         <video
