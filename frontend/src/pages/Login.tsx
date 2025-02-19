@@ -39,7 +39,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
+    <div className="min-h-screen bg-dun flex">
       {loading && <Loading />}
 
       {/* Left Side */}
@@ -48,8 +48,8 @@ const Login: React.FC = () => {
       </div>
 
       {/* Right Side */}
-      <div className="w-2/5 bg-jet flex flex-col justify-center p-12">
-        <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Log in to MAKTABA</h2>
+      <div className="w-2/5 bg-gradient-to-br from-jet to-night flex flex-col justify-center p-12">
+        <h2 className="text-3xl font-bold mb-8 mx-auto">Log in to MAKTABA</h2>
 
         {error && <p className="text-red-500 text-sm mb-4 mx-auto font-medium">{error}</p>}
 
@@ -93,13 +93,13 @@ const Login: React.FC = () => {
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
-          <button type="submit" className="w-full py-2 px-4 cursor-pointer bg-amber-600 hover:bg-amber-700 text-white rounded-md">Sign in</button>
+          <button type="submit" className="w-full py-2 px-4 cursor-pointer bg-dun hover:bg-dun/50 text-black transition-all rounded-md">Sign in</button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-flash">
             Don't have an account?{' '}
-            <Link to='/register' className="font-medium cursor-pointer text-amber-600 hover:text-amber-500">
+            <Link to='/register' className="font-medium cursor-pointer text-dun hover:text-dun/50">
               Sign up
             </Link>
           </p>

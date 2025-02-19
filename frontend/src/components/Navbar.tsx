@@ -1,25 +1,28 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../contexts/auth"
+import { Book } from "lucide-react";
 
 const Navbar: React.FC = () => {
     const { isLogged, logout } = useAuth();
 
     return (
-        <header className="bg-jet">
+        <header className="bg-night">
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center">
-                    <span className="text-2xl font-bold text-yellow-500">MEKTABA</span>
+                <div className="flex items-center justify-between gap-2">
+                    <Book className="text-dun"/>
+                    <span className="text-2xl font-bold text-dun">MEKTABA</span>
+
                 </div>
 
                 <nav className="flex space-x-6 text-flash">
-                    <Link to="/" className="hover:text-yellow-600 transition duration-300">
+                    <Link to="/" className="hover:text-dun cursor-pointer transition duration-300">
                         Home
                     </Link>
-                    <Link to="/books" className="hover:text-yellow-600 transition duration-300">
+                    <Link to="/books" className="hover:text-dun cursor-pointer transition duration-300">
                         Books
                     </Link>
-                    <Link to="/about" className="hover:text-yellow-600 transition duration-300">
+                    <Link to="/about" className="hover:text-dun cursor-pointer transition duration-300">
                         About
                     </Link>
                 </nav>
@@ -27,16 +30,16 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center space-x-4">
                     {isLogged ? (
                         <>
-                            <button onClick={logout} className="cursor-pointer bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition duration-300">
+                            <button onClick={logout} className="cursor-pointer bg-dun hover:bg-dun/50 text-white px-4 py-2 rounded-md transition duration-300">
                                 Logout
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link to='/login' className="cursor-pointer bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition duration-300">
+                            <Link to='/login' className="cursor-pointer bg-dun hover:bg-dun/50 text-jet px-4 py-2 rounded-md transition duration-300">
                                 Login
                             </Link>
-                            <Link to="/signup" className="cursor-pointer bg-transparent border border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white px-4 py-2 rounded-md transition duration-300">
+                            <Link to="/signup" className="cursor-pointer bg-transparent border border-jet text-dun hover:bg-dun/50 hover:text-white px-4 py-2 rounded-md transition duration-300">
                                 Register
                             </Link>
                         </>

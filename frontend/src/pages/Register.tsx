@@ -61,12 +61,12 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-amber-800 to-amber-950 flex">
+        <div className="min-h-screen bg-gradient-to-br from-dun flex">
             {loading && <Loading />}
 
             {/* Left side */}
-            <div className="w-2/5 bg-jet flex flex-col justify-center p-12">
-                <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Register to MAKTABA</h2>
+            <div className="w-2/5 bg-gradient-to-tl from-jet to-night flex flex-col justify-center p-12">
+                <h2 className="text-3xl font-bold mb-8 mx-auto">Register to MAKTABA</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4 mx-auto text-center">{error}</p>}
 
@@ -170,7 +170,7 @@ const Register: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full py-2 px-4 cursor-pointer border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                        className="w-full py-2 px-4 cursor-pointer bg-dun hover:bg-dun/50 text-black transition-all rounded-md"
                     >
                         Sign up
                     </button>
@@ -179,7 +179,7 @@ const Register: React.FC = () => {
                 <div className="mt-6 text-center">
                     <p className="text-sm text-flash">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium cursor-pointer text-amber-600 hover:text-amber-500">
+                        <Link to="/login" className="font-medium cursor-pointer text-dun hover:text-dun/50">
                             Log in
                         </Link>
                     </p>
