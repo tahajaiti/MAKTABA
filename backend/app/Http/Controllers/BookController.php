@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -25,11 +26,21 @@ class BookController extends Controller
         $request->validate([
             'title' => 'required|string|max:255|min:3',
             'author' => 'required|string|max:255|min:3',
-            'cover' => 'nullable|string',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $book = Book::create($request->validated());
+        $path = null;
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('covers', 'public');
+        }
+
+        $book = Book::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'cover' => $path,
+            'quantity' => $request->quantity,
+        ]);
 
         return ApiResponse::success($book, 'Book created successfully', 201);
     }
@@ -56,7 +67,7 @@ class BookController extends Controller
         $request->validate([
            'title' => 'string|max:255|min:3',
            'author' => 'string|max:255|min:3',
-           'cover' => 'string|nullable',
+           'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
            'quantity' => 'integer|min:1',
         ]);
 
@@ -66,7 +77,16 @@ class BookController extends Controller
             return ApiResponse::error('Book does not exist', 404);
         }
 
-        $book->update($request->all());
+        if ($request->hasFile('cover')){
+            if ($book->cover){
+                Storage::disk('public')->delete($book->cover);
+            }
+
+            $path = $request->file('cover')->store('covers', 'public');
+            $book->cover = $path;
+        }
+
+        $book->update($request->except('cover'));
 
         return ApiResponse::success($book, 'Book updated successfully');
     }

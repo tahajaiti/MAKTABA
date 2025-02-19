@@ -35,7 +35,7 @@ class AuthController extends Controller
         return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => new UserResource($request->user())
+            'user' => new UserResource($user)
         ], 'User registered successfully', 201);
     }
 
@@ -59,7 +59,7 @@ class AuthController extends Controller
         return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => new UserResource($request->user())
+            'user' => new UserResource($user)
         ], 'Logged in successfully');
 
     }
