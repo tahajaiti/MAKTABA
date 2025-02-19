@@ -1,5 +1,5 @@
 import React from 'react';
-import {  ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 

@@ -23,8 +23,8 @@ export const useBookStore = create<BookStore>((set) => ({
     getAll: async () => {
         set({ loading: true, error: null });
         try {
-            const books = (await bookService.getAll()).data.data;
-            set({ books });
+            const response = await bookService.getAll();
+            set({ books: response.data.data });
         } catch (err: any) {
             set({ error: err?.response?.data?.message || "Failed to fetch books." });
         } finally {
@@ -36,10 +36,7 @@ export const useBookStore = create<BookStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const response = await bookService.get(id);
-            if (response.data.data) {
-                return response.data.data;
-            }
-            return null;
+            return response.data.data || null;
         } catch (err: any) {
             set({ error: err?.response?.data?.message || "Failed to fetch book." });
             return null;
