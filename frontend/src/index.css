@@ -1,12 +1,18 @@
 @import "tailwindcss";
 
-body {
-    @apply bg-white text-black;
-}
-
 @theme {
 
 
     --color-platinum: oklch(92.19% 0 0);
+    --color-smoke: oklch(18.05% 0.0064 55.94);
+    --color-jet: oklch(31.49% 0.0082 75.27);
+    --color-gris: oklch(59.69% 0.0061 274.91);
+    --color-dun: oklch(83.5% 0.0344 65.88);
+    --color-flash: oklch(96.44% 0.0013 286.38);
+    --color-night: oklch(16.58% 0.004 48.47)
 
+}
+
+body {
+    @apply bg-night text-white;
 }

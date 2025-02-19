@@ -6,13 +6,13 @@ const Navbar: React.FC = () => {
     const { isLogged, logout } = useAuth();
 
     return (
-        <header className="bg-platinum">
+        <header className="bg-jet">
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="text-2xl font-bold text-yellow-500">MEKTABA</span>
                 </div>
 
-                <nav className="flex space-x-6">
+                <nav className="flex space-x-6 text-flash">
                     <Link to="/" className="hover:text-yellow-600 transition duration-300">
                         Home
                     </Link>

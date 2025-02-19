@@ -65,14 +65,14 @@ const Register: React.FC = () => {
             {loading && <Loading />}
 
             {/* Left side */}
-            <div className="w-2/5 bg-white flex flex-col justify-center p-12">
+            <div className="w-2/5 bg-jet flex flex-col justify-center p-12">
                 <h2 className="text-3xl font-bold mb-8 mx-auto text-amber-500">Register to MAKTABA</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4 mx-auto text-center">{error}</p>}
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="name" className="block text-sm font-medium text-flash mb-1">
                             Name
                         </label>
                         <div className="relative">
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="email" className="block text-sm font-medium text-flash mb-1">
                             Email
                         </label>
                         <div className="relative">
@@ -114,7 +114,7 @@ const Register: React.FC = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="password" className="block text-sm font-medium text-flash mb-1">
                             Password
                         </label>
                         <div className="relative">
@@ -141,7 +141,7 @@ const Register: React.FC = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-flash mb-1">
                             Confirm Password
                         </label>
                         <div className="relative">
@@ -170,16 +170,16 @@ const Register: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                        className="w-full py-2 px-4 cursor-pointer border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                     >
                         Sign up
                     </button>
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-flash">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium text-amber-600 hover:text-amber-500">
+                        <Link to="/login" className="font-medium cursor-pointer text-amber-600 hover:text-amber-500">
                             Log in
                         </Link>
                     </p>
