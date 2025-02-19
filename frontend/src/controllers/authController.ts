@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react";
 import authService from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/auth";
+import { useAuthStore } from "../stores/authStore";
 
 
 const useAuthController = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const { login, logout } = useAuth();
+    const { login, logout } = useAuthStore();
 
     // const handleLogin = async (email: string, password: string) => {
     //     setLoading(true);
@@ -34,7 +34,7 @@ const useAuthController = () => {
             const response = await authService.login({ email, password });
 
             if (response.data.data) {
-                login(response.data.data);
+                login(response.data.data.access_token);
                 navigate('/');
             } else {
                 setError('Login failed, please try again');
@@ -71,7 +71,7 @@ const useAuthController = () => {
             const response = await authService.register({ name, email, password, password_confirmation });
 
             if (response.data.data) {
-                login(response.data.data);
+                login(response.data.data.access_token);
                 navigate('/');
             } else {
                 setError('Registering failed, please try again');

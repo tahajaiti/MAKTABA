@@ -1,10 +1,10 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { useAuth } from "../contexts/auth"
+import { useAuthStore } from "../stores/authStore";
 import { Book } from "lucide-react";
 
 const Navbar: React.FC = () => {
-    const { isLogged, logout } = useAuth();
+    const { isAuth, logout } = useAuthStore();
 
     return (
         <header className="bg-night">
@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
                 </nav>
 
                 <div className="flex items-center space-x-4">
-                    {isLogged ? (
+                    {isAuth ? (
                         <>
                             <button onClick={logout} className="cursor-pointer bg-dun hover:bg-dun/50 text-white px-4 py-2 rounded-md transition duration-300">
                                 Logout
