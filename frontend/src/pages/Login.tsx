@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import useAuthController from "../controllers/authController";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 import video from "../assets/login_vid.mp4";
 import Loading from "../components/Loading";
+import { useAuthStore } from "../stores/authStore";
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
-  const { handleLogin, loading, error } = useAuthController();
+  const { login, loading, error } = useAuthStore();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +33,9 @@ const Login: React.FC = () => {
     const passwordErr = validatePassword(credentials.password);
 
     if (!emailErr && !passwordErr) {
-      handleLogin(credentials.email, credentials.password);
+      login(credentials.email, credentials.password).then(() => {
+        navigate("/");
+      });
     } else {
       setErrors({ email: emailErr, password: passwordErr });
     }

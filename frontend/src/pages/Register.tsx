@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaEye, FaEyeSlash, FaUser } from 'react-icons/fa';
 import video from '../assets/login_vid.mp4';
-import useAuthController from '../controllers/authController';
 import Loading from '../components/Loading';
+import { useAuthStore } from '../stores/authStore';
 
 const Register: React.FC = () => {
     const [creds, setCreds] = useState({ name: '', email: '', password: '', password_confirmation: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({ name: '', email: '', password: '', password_confirmation: '' });
-
-    const { register, loading, error } = useAuthController();
+    const { register, loading, error } = useAuthStore();
+    const navigate = useNavigate();
 
     const validateName = (name: string) => {
         const nameRegex = /^[A-Za-z\s]+$/;
@@ -56,7 +56,9 @@ const Register: React.FC = () => {
         });
 
         if (!nameErr && !emailErr && !passwordErr && !confirmPassErr) {
-            register(creds.name, creds.email, creds.password, creds.password_confirmation);
+            register(creds.name, creds.email, creds.password, creds.password_confirmation).then(() => {
+                navigate('/');
+            });
         }
     };
 
