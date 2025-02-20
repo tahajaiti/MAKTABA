@@ -1,14 +1,26 @@
 import { Book, Calendar, Edit, Hash, Trash, User } from "lucide-react"
 import { formatDistance } from "date-fns"
 import BookType from "../types/Book"
+import { useBookStore } from "../stores/bookStore"
+import { useAuthStore } from "../stores/authStore"
 
 interface props {
     book: BookType
-    role: string
 }
 
-export function BookCard({ book, role }: props) {
-    const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });    
+export function BookCard({ book }: props) {
+    const { role } = useAuthStore();
+    const store = useBookStore();
+
+    console.log(role);
+    
+
+    const handleDelete = () => {
+        store.delete(book.id);
+    }
+
+
+    const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });
 
     return (
         <div className="group relative overflow-hidden rounded-lg border bg-dun p-6 transition-all hover:shadow-lg">
@@ -70,7 +82,7 @@ export function BookCard({ book, role }: props) {
                                 <button className="text-2xl text-blue-500 cursor-pointer hover:text-blue-800 transition-all">
                                     <Edit />
                                 </button>
-                                <button className="text-2xl text-red-500 cursor-pointer hover:text-red-800 transition-all">
+                                <button onClick={handleDelete} className="text-2xl text-red-500 cursor-pointer hover:text-red-800 transition-all">
                                     <Trash />
                                 </button>
                             </div>

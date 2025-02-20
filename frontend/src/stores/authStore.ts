@@ -5,6 +5,7 @@ import User from '../types/User';
 interface AuthState {
     isAuth: boolean;
     user: User | null;
+    role: string | null;
     loading: boolean;
     error: string | null;
     login: (email: string, password: string) => Promise<void>;
@@ -12,9 +13,14 @@ interface AuthState {
     logout: () => Promise<void>;
 }
 
+const storedUser = localStorage.getItem('user');
+const storedRole = localStorage.getItem('role');
+
+
 export const useAuthStore = create<AuthState>((set) => ({
     isAuth: !!localStorage.getItem('token'),
-    user: null,
+    user: storedUser ? JSON.parse(storedUser) : null,
+    role: storedRole || null,
     loading: false,
     error: null,
 
@@ -25,8 +31,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
             if (response.data?.data?.access_token) {
                 localStorage.setItem('token', response.data.data.access_token);
-                set({ isAuth: true });
-                set({ user: response.data.data.user });
+                localStorage.setItem('user', JSON.stringify(response.data.data.user));
+                localStorage.setItem('role', response.data.data.user.role);
+                set({ isAuth: true, user: response.data.data.user, role: response.data.data.user.role });
             } else {
                 throw new Error("Invalid credentials, please try again.");
             }
@@ -44,8 +51,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
             if (response.data?.data?.access_token) {
                 localStorage.setItem('token', response.data.data.access_token);
-                set({ isAuth: true });
-                set({ user: response.data.data.user });
+                localStorage.setItem('user', JSON.stringify(response.data.data.user));
+                localStorage.setItem('role', response.data.data.user.role);
+                set({ isAuth: true, user: response.data.data.user, role: response.data.data.user.role });
             } else {
                 throw new Error("Registration failed, please try again.");
             }
@@ -60,8 +68,9 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ loading: true });
         try {
             localStorage.removeItem('token');
-            set({ isAuth: false });
-            set({ user: null });
+            localStorage.removeItem('user');
+            localStorage.removeItem('role');
+            set({ isAuth: false, user: null, role: null });
             await authService.logout();
         } catch {
             set({ error: "Logout failed, please try again." });
