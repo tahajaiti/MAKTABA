@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import authService from "../services/authService";
+import User from '../types/User';
 
 interface AuthState {
     isAuth: boolean;
+    user: User | null;
     loading: boolean;
     error: string | null;
     login: (email: string, password: string) => Promise<void>;
@@ -12,6 +14,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
     isAuth: !!localStorage.getItem('token'),
+    user: null,
     loading: false,
     error: null,
 
@@ -23,6 +26,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             if (response.data?.data?.access_token) {
                 localStorage.setItem('token', response.data.data.access_token);
                 set({ isAuth: true });
+                set({ user: response.data.data.user });
             } else {
                 throw new Error("Invalid credentials, please try again.");
             }
@@ -41,6 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             if (response.data?.data?.access_token) {
                 localStorage.setItem('token', response.data.data.access_token);
                 set({ isAuth: true });
+                set({ user: response.data.data.user });
             } else {
                 throw new Error("Registration failed, please try again.");
             }
@@ -56,6 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             localStorage.removeItem('token');
             set({ isAuth: false });
+            set({ user: null });
             await authService.logout();
         } catch {
             set({ error: "Logout failed, please try again." });
