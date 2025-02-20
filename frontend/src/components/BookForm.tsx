@@ -3,11 +3,11 @@ import { Book, User, Hash, Image, XIcon } from 'lucide-react';
 import { BookAdd } from '../types/Book';
 import { useBookStore } from '../stores/bookStore';
 
-interface props {
+interface Props {
     handle: () => void;
 }
 
-const BookForm = ({ handle }: props) => {
+const BookForm = ({ handle }: Props) => {
     const { add, getAll, current_page } = useBookStore();
     const [formData, setFormData] = useState<BookAdd>({
         title: '',
@@ -17,9 +17,41 @@ const BookForm = ({ handle }: props) => {
     });
 
     const [preview, setPreview] = useState<string>('');
+    const [errors, setErrors] = useState<{ title?: string, author?: string, quantity?: string, cover?: string }>({});
+
+    const validate = () => {
+        const newErrors: typeof errors = {};
+
+        if (!formData.title.trim() || formData.title.length < 3) {
+            newErrors.title = "Title must be at least 3 characters long.";
+        }
+
+        if (!formData.author.trim() || formData.author.length < 3) {
+            newErrors.author = "Author name must be at least 3 characters long.";
+        }
+
+        if (formData.quantity < 1 || isNaN(formData.quantity)) {
+            newErrors.quantity = "Quantity must be a positive number.";
+        }
+
+        if (formData.cover) {            
+            const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+            if (!allowedTypes.includes((formData.cover as File).type) || !formData.cover) {
+                newErrors.cover = "Only JPG, PNG, or GIF images are allowed.";
+            }
+        }
+
+        if (!formData.cover){
+            newErrors.cover = "Please upload an image.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
 
         const form = new FormData();
         form.append('title', formData.title);
@@ -29,12 +61,8 @@ const BookForm = ({ handle }: props) => {
 
         await add(form);
         getAll(current_page);
-        setFormData({
-            title: '',
-            author: '',
-            cover: null,
-            quantity: 1
-        });
+        setFormData({ title: '', author: '', cover: null, quantity: 1 });
+        setPreview('');
         handle();
     };
 
@@ -42,8 +70,9 @@ const BookForm = ({ handle }: props) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: name === 'quantity' ? Math.max(1, parseInt(value)) : value
         }));
+        validate();
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,8 +80,7 @@ const BookForm = ({ handle }: props) => {
         if (file && file[0]) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                const imageUrl = reader.result as string;
-                setPreview(imageUrl);
+                setPreview(reader.result as string);
                 setFormData(prev => ({
                     ...prev,
                     cover: file[0]
@@ -63,10 +91,10 @@ const BookForm = ({ handle }: props) => {
     };
 
     return (
-        <div className="w-full h-full fixed top-0 z-10 rounded-lg bg-black/30 backdrop-blur-sm p-8 flex justify-center items-center">
+        <div className="w-full h-full fixed top-0 z-10 bg-black/30 backdrop-blur-sm p-8 flex justify-center items-center">
             <div className='w-1/2 bg-dun p-4 rounded-md'>
                 <div className='flex justify-between items-center'>
-                    <h2 className="mb-6 text-2xl  font-bold text-night">Add New Book</h2>
+                    <h2 className="mb-6 text-2xl font-bold text-night">Add New Book</h2>
                     <XIcon className='text-4xl text-red-600 cursor-pointer' onClick={handle} />
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6 text-white" encType='multipart/form-data'>
@@ -81,21 +109,18 @@ const BookForm = ({ handle }: props) => {
                             type="file"
                         />
                         {preview ? (
-                            <img
-                                src={preview}
-                                alt="Book cover preview"
-                                className="h-52 w-32 rounded-lg object-cover"
-                            />
+                            <img src={preview} alt="Book cover preview" className="h-52 w-32 rounded-lg object-cover" />
                         ) : (
                             <div className="flex h-52 w-32 bg-jet rounded-md flex-col items-center justify-center gap-2 text-white">
                                 <Image className="h-8 w-8" />
                             </div>
                         )}
+                        {errors.cover && <p className="text-red-500">{errors.cover}</p>}
                     </div>
 
                     {/* Title Input */}
                     <div className="space-y-2">
-                        <label htmlFor="title" className="flex text-night items-center gap-2 ">
+                        <label htmlFor="title" className="flex text-night items-center gap-2">
                             <Book className="h-4 w-4" />
                             <span>Book Title</span>
                         </label>
@@ -105,15 +130,16 @@ const BookForm = ({ handle }: props) => {
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-gris bg-smoke p-3  outline-none focus:border-platinum"
+                            className="w-full rounded-lg border border-gris bg-smoke p-3 outline-none focus:border-platinum"
                             placeholder="Enter book title"
                             required
                         />
+                        {errors.title && <p className="text-red-500">{errors.title}</p>}
                     </div>
 
                     {/* Author Input */}
                     <div className="space-y-2">
-                        <label htmlFor="author" className="flex  text-night items-center gap-2 ">
+                        <label htmlFor="author" className="flex text-night items-center gap-2">
                             <User className="h-4 w-4" />
                             <span>Author</span>
                         </label>
@@ -123,15 +149,16 @@ const BookForm = ({ handle }: props) => {
                             name="author"
                             value={formData.author}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-gris bg-smoke p-3  outline-none focus:border-platinum"
+                            className="w-full rounded-lg border border-gris bg-smoke p-3 outline-none focus:border-platinum"
                             placeholder="Enter author name"
                             required
                         />
+                        {errors.author && <p className="text-red-500">{errors.author}</p>}
                     </div>
 
                     {/* Quantity Input */}
                     <div className="space-y-2">
-                        <label htmlFor="quantity" className="flex text-night items-center gap-2 ">
+                        <label htmlFor="quantity" className="flex text-night items-center gap-2">
                             <Hash className="h-4 w-4" />
                             <span>Quantity</span>
                         </label>
@@ -142,9 +169,10 @@ const BookForm = ({ handle }: props) => {
                             value={formData.quantity}
                             onChange={handleChange}
                             min="1"
-                            className="w-full rounded-lg border border-gris bg-smoke p-3  outline-none focus:border-platinum"
+                            className="w-full rounded-lg border border-gris bg-smoke p-3 outline-none focus:border-platinum"
                             required
                         />
+                        {errors.quantity && <p className="text-red-500">{errors.quantity}</p>}
                     </div>
 
                     {/* Submit Button */}
