@@ -67,7 +67,7 @@ const BookForm = ({ handle }: props) => {
             <div className='w-1/2 bg-dun p-4 rounded-md'>
                 <div className='flex justify-between items-center'>
                     <h2 className="mb-6 text-2xl  font-bold text-night">Add New Book</h2>
-                    <XIcon className='text-4xl text-red-600 cursor-pointer' onClick={() => handle} />
+                    <XIcon className='text-4xl text-red-600 cursor-pointer' onClick={handle} />
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6 text-white" encType='multipart/form-data'>
                     {/* Cover Input */}
