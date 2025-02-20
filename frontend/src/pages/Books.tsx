@@ -8,12 +8,9 @@ const Books: React.FC = () => {
   const { isAuth, user } = useAuthStore();
 
   const getRole = () => {
-    if (isAuth && user) {
-      console.log(user);
-      
+    if (isAuth && user) {      
       return user.role;
     }
-
     return '';
   }
 
@@ -35,7 +32,7 @@ const Books: React.FC = () => {
 
       <section className='p-4 flex flex-col gap-4'>
         {books.map(b => (
-          <BookCard key={b.id} book={b} />
+          <BookCard key={b.id} book={b} role={getRole()}/>
         ))}
       </section>
     </div>
