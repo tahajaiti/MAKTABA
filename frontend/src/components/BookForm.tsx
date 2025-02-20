@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, User, Hash, Image } from 'lucide-react';
+import { Book, User, Hash, Image, XIcon } from 'lucide-react';
 import { BookAdd } from '../types/Book';
 import { useBookStore } from '../stores/bookStore';
 
@@ -8,7 +8,7 @@ interface props {
 }
 
 const BookForm = ({ handle }: props) => {
-    const { add, getAll } = useBookStore();
+    const { add, getAll, current_page } = useBookStore();
     const [formData, setFormData] = useState<BookAdd>({
         title: '',
         author: '',
@@ -28,7 +28,7 @@ const BookForm = ({ handle }: props) => {
         form.append('cover', formData.cover as File);
 
         await add(form);
-        getAll();
+        getAll(current_page);
         setFormData({
             title: '',
             author: '',
@@ -65,7 +65,10 @@ const BookForm = ({ handle }: props) => {
     return (
         <div className="w-full h-full fixed top-0 z-10 rounded-lg bg-black/30 backdrop-blur-sm p-8 flex justify-center items-center">
             <div className='w-1/2 bg-dun p-4 rounded-md'>
-                <h2 className="mb-6 text-2xl text-center font-bold text-night">Add New Book</h2>
+                <div className='flex justify-between items-center'>
+                    <h2 className="mb-6 text-2xl  font-bold text-night">Add New Book</h2>
+                    <XIcon className='text-4xl text-red-600 cursor-pointer' onClick={() => handle} />
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-6 text-white" encType='multipart/form-data'>
                     {/* Cover Input */}
                     <div className='flex flex-col justify-center items-center gap-4'>

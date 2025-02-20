@@ -6,17 +6,21 @@ import BookForm from '../components/BookForm';
 
 const Books: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
-  const { books, getAll } = useBookStore();
+  const { books, getAll, nextPage, prevPage, current_page } = useBookStore();
   const { role } = useAuthStore();
 
 
+  const handleForm = () => {
+    setShowForm(!showForm);
+  }
+
   useEffect(() => {
-    getAll();
-  }, [getAll]);
+    getAll(current_page);
+  }, [current_page, getAll]);
 
   return (
     <>
-    {showForm && <BookForm handle={setShowForm}/>}
+    {showForm && <BookForm handle={() => setShowForm(!showForm)}/>}
     <div className='container mx-auto p-10'>
       <div className='w-full px-4 flex justify-between items-center'>
         <h1 className='text-2xl font-bold text-dun'>Books</h1>
@@ -32,6 +36,8 @@ const Books: React.FC = () => {
           <BookCard key={b.id} book={b} />
         ))}
       </section>
+      <button onClick={prevPage}>PrevPage</button>
+      <button onClick={nextPage}>NextPage</button>
     </div>
     </>
   );
