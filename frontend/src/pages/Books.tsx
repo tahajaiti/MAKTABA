@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBookStore } from '../stores/bookStore';
 import { BookCard } from '../components/BookCard';
 import { useAuthStore } from '../stores/authStore';
+import BookForm from '../components/BookForm';
 
 const Books: React.FC = () => {
+  const [showForm, setShowForm] = useState(false);
   const { books, getAll } = useBookStore();
   const { role } = useAuthStore();
 
@@ -13,11 +15,13 @@ const Books: React.FC = () => {
   }, [getAll]);
 
   return (
+    <>
+    {showForm && <BookForm />}
     <div className='container mx-auto p-10'>
       <div className='w-full px-4 flex justify-between items-center'>
         <h1 className='text-2xl font-bold text-dun'>Books</h1>
         {role === 'admin' ?
-          (<button
+          (<button onClick={() => setShowForm(!showForm)}
             className='py-2 px-4 cursor-pointer bg-dun hover:bg-dun/50 text-black transition-all rounded-md'>
             Add book
           </button>) : ''}
@@ -29,6 +33,7 @@ const Books: React.FC = () => {
         ))}
       </section>
     </div>
+    </>
   );
 };
 
