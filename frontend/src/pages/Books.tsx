@@ -39,7 +39,7 @@ const Books: React.FC = () => {
         </section>
 
         <div className='flex items-center justify-center gap-2'>
-          {current_page === last_page &&
+          {current_page > 1 &&
             <button
               onClick={() => prevPage()}
               className="px-4 py-2 rounded-sm bg-dun hover:bg-dun/50 cursor-pointer"
@@ -57,7 +57,7 @@ const Books: React.FC = () => {
             </button>
           ))}
 
-          {current_page === 1 &&
+          {current_page < last_page &&
             <button
               onClick={() => nextPage()}
               className="px-4 py-2 rounded-sm bg-dun hover:bg-dun/50 cursor-pointer"
