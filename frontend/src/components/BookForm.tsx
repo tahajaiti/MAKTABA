@@ -3,7 +3,11 @@ import { Book, User, Hash, Image } from 'lucide-react';
 import { BookAdd } from '../types/Book';
 import { useBookStore } from '../stores/bookStore';
 
-const BookForm = () => {
+interface props {
+    handle: () => void;
+}
+
+const BookForm = ({ handle }: props) => {
     const { add, getAll } = useBookStore();
     const [formData, setFormData] = useState<BookAdd>({
         title: '',
@@ -31,6 +35,7 @@ const BookForm = () => {
             cover: null,
             quantity: 1
         });
+        handle();
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

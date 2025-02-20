@@ -16,7 +16,7 @@ const Books: React.FC = () => {
 
   return (
     <>
-    {showForm && <BookForm />}
+    {showForm && <BookForm handle={setShowForm}/>}
     <div className='container mx-auto p-10'>
       <div className='w-full px-4 flex justify-between items-center'>
         <h1 className='text-2xl font-bold text-dun'>Books</h1>

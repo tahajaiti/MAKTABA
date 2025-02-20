@@ -19,7 +19,6 @@ export function BookCard({ book }: props) {
         store.delete(book.id);
     }
 
-
     const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });
 
     return (
