@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Book;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Book>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
  */
-class BookFactory extends Factory
+class RoleFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,9 +18,7 @@ class BookFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->realText(10),
-            'author' => $this->faker->name(),
-            'quantity' => $this->faker->numberBetween(1, 100),
+            'name' => $this->faker->unique()->randomElement(['admin', 'user']),
         ];
     }
 }

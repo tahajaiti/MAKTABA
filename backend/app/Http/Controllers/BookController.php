@@ -15,7 +15,7 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(Book::all(), 200);
+        return ApiResponse::success(Book::all());
     }
 
     /**
@@ -30,10 +30,7 @@ class BookController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $path = null;
-        if ($request->hasFile('cover')) {
-            $path = $request->file('cover')->store('covers', 'public');
-        }
+        $path = $request->hasFIle('cover') ? $request->file('cover')->store('covers', 'public') : null;
 
         $book = Book::create([
             'title' => $request->title,

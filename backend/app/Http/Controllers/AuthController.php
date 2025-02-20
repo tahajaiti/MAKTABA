@@ -21,7 +21,9 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed'
         ]);
 
-        $role = Role::firstOrCreate(['name' => 'user']);
+        User::count() === 0 ?
+            $role = Role::where('name', 'admin')->first() :
+            $role = Role::where('name', 'user')->first();
 
         $user = User::create([
             'name' => $request->name,
@@ -61,7 +63,6 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => new UserResource($user)
         ], 'Logged in successfully');
-
     }
 
     public function logout(Request $request): JsonResponse
