@@ -8,12 +8,12 @@ interface props {
     book: BookType
 }
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 export function BookCard({ book }: props) {
     const { role } = useAuthStore();
-    const store = useBookStore();
-
-    console.log(role);
-    
+    const store = useBookStore();    
+    const imageUrl = book.cover ? `${API_URL}/${book.cover}` : "/placeholder.jpg";
 
     const handleDelete = () => {
         store.delete(book.id);
@@ -29,7 +29,7 @@ export function BookCard({ book }: props) {
                 <div className="relative h-[180px] w-[120px] shrink-0 overflow-hidden rounded-md border bg-white text-black shadow-sm">
                     {book.cover ? (
                         <img
-                            src={book.cover}
+                            src={imageUrl}
                             alt={`${book.title} cover`}
                             className="h-full w-full object-cover"
                         />

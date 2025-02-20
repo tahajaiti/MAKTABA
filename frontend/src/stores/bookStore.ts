@@ -8,7 +8,7 @@ interface BookStore {
     error: string | null;
     getAll: () => Promise<void>;
     get: (id: number) => Promise<Book | null>;
-    add: (bookData: Omit<Book, "id">) => Promise<void>;
+    add: (bookData: FormData) => Promise<void>;
     update: (id: number, bookData: Partial<Book>) => Promise<void>;
     delete: (id: number) => Promise<void>;
 }

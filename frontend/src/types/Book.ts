@@ -8,4 +8,12 @@ interface Book {
     updated_at: Date
 }
 
+export interface BookAdd {
+    title: string,
+    author: string
+    cover: File | null,
+    quantity: number
+}
+
+
 export default Book;

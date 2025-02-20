@@ -5,7 +5,7 @@ import Response from '../types/Response';
 
 const getAll = () => api.get<Response<Book[]>>('/books');
 const get = (id: number) => api.get<Response<Book>>(`/books/${id}`);
-const create = (data: Omit<Book, 'id'>) => api.post<Response<Book>>('/books', data);
+const create = (data: FormData) => api.post<Response<Book>>('/books', data);
 const update = (id: number, data: Partial<Book>) => api.put<Response<Book>>(`/books/${id}`, data);
 const remove = (id: number) => api.delete<Response<null>>(`/books/${id}`);
 

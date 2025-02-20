@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Book, User, Hash, Image } from 'lucide-react';
-import BookType from '../types/Book';
+import { BookAdd } from '../types/Book';
 import { useBookStore } from '../stores/bookStore';
 
 const BookForm = () => {
     const { add, getAll } = useBookStore();
-    const [formData, setFormData] = useState<Partial<BookType>>({
+    const [formData, setFormData] = useState<BookAdd>({
         title: '',
         author: '',
-        cover: '',
+        cover: null,
         quantity: 1
     });
 
@@ -16,13 +16,19 @@ const BookForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData);
-        await add(formData as BookType);
+
+        const form = new FormData();
+        form.append('title', formData.title);
+        form.append('author', formData.author);
+        form.append('quantity', formData.quantity.toString());
+        form.append('cover', formData.cover as File);
+
+        await add(form);
         getAll();
         setFormData({
             title: '',
             author: '',
-            cover: '',
+            cover: null,
             quantity: 1
         });
     };
@@ -36,18 +42,18 @@ const BookForm = () => {
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
+        const file = e.target.files;
+        if (file && file[0]) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const imageUrl = reader.result as string;
                 setPreview(imageUrl);
                 setFormData(prev => ({
                     ...prev,
-                    cover: imageUrl
+                    cover: file[0]
                 }));
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file[0]);
         }
     };
 
