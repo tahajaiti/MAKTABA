@@ -97,16 +97,17 @@ export function BookCard({ book }: props) {
             )
         }
 
-        const borrowed = borrows.some(b => b.book_id === book.id && !b.is_returned);
-
-        return (
-            <button
-                disabled={loading}
-                onClick={borrowed ? handleReturn : handleBorrow}
-                className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                {loading ? 'Loading...' : borrowed ? 'Return' : 'Borrow'}
-            </button>
-        )
+        if (book.quantity > 0) {
+            const borrowed = borrows.some(b => b.book_id === book.id && !b.is_returned);
+            return (
+                <button
+                    disabled={loading}
+                    onClick={borrowed ? handleReturn : handleBorrow}
+                    className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                    {loading ? 'Loading...' : borrowed ? 'Return' : 'Borrow'}
+                </button>
+            )
+        }
     }
 
 
@@ -170,7 +171,7 @@ export function BookCard({ book }: props) {
                                 </div>
                                 <div className="flex items-center gap-2 text-jet">
                                     <Book className="h-4 w-4" />
-                                    <span>Quantity: {book.quantity}</span>
+                                    <span>Quantity: {book.quantity > 0 ? book.quantity : 'Out Of Stock'}</span>
                                 </div>
                             </div>
 
