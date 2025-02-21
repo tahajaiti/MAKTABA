@@ -55,7 +55,8 @@ export const useBookStore = create<BookStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const currPage = useBookStore.getState().current_page;
-            await bookService.create(bookData);
+            const response =await bookService.create(bookData);
+            console.log(response);
             await useBookStore.getState().getAll(currPage);
         } catch (err: any) {
             set({ error: err?.response?.data?.message || "Failed to add book." });
@@ -68,7 +69,8 @@ export const useBookStore = create<BookStore>((set) => ({
         set({ loading: true, error: null });
         try {
             const currPage = useBookStore.getState().current_page;
-            await bookService.update(id, bookData);
+            const response = await bookService.update(id, bookData);
+            console.log(response);
             await useBookStore.getState().getAll(currPage);
         } catch (err: any) {
             set({ error: err?.response?.data?.message || "Failed to update book." });
