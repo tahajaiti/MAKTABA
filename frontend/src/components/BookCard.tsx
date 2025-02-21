@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { Book, Calendar, Edit, Hash, Trash, User } from "lucide-react"
 import { formatDistance } from "date-fns"
 import BookType from "../types/Book"
@@ -18,19 +18,25 @@ export function BookCard({ book }: props) {
     const [showEdit, setShowEdit] = useState(false);
     const [loading, setLoading] = useState(false);
     const [borrows, setBorrows] = useState<Borrow[]>([]);
-    const { role } = useAuthStore();
+    const { role, user } = useAuthStore();
     const store = useBookStore();
     const imageUrl = book.cover ? `${API_URL}/${book.cover}` : "/placeholder.jpg";
 
 
     const get = async () => {
         setLoading(true);
-        const response = await borrowService.getMyBorrows();
-        if (response.data.data) {
-            setBorrows(response.data.data);
+        try {
+            const response = await borrowService.getMyBorrows();
+            if (response.data.data) {
+                setBorrows(response.data.data);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
             setLoading(false);
         }
     }
+
 
     useEffect(() => {
         get();
@@ -43,30 +49,37 @@ export function BookCard({ book }: props) {
     const handleBorrow = async () => {
         setLoading(true);
         try {
+            await borrowService.borrow(book.id);
+            if (user && user.id) {
+                const borrow = {
+                    user_id: user.id,
+                    book_id: book.id,
+                    return_date: '',
+                    borrow_date: new Date().toISOString(),
+                    is_returned: false
+                }
+                setBorrows([...borrows, borrow]);
+            }
             store.getAll(store.current_page);
-            const response = await borrowService.borrow(book.id);
-            get();
-            console.log(response);
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const handleReturn = async () => {
         setLoading(true);
         try {
+            await borrowService.returnBook(book.id);
+            setBorrows(borrows.filter(b => b.book_id !== book.id || b.is_returned));
             store.getAll(store.current_page);
-            const response = await borrowService.returnBook(book.id);
-            get();
-            console.log(response);
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
 
     const getButton = () => {
@@ -82,28 +95,20 @@ export function BookCard({ book }: props) {
                     </button>
                 </div>
             )
-        } else {
-            if (borrows.find(borrow => borrow.book_id === book.id && borrow.is_returned === false)) {
-                return (
-                    <button
-                        disabled={loading}
-                        onClick={handleReturn}
-                        className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                        {loading ? 'Loading...' : 'Return'}
-                    </button>
-                )
-            } else if (book.quantity > 0) {
-                return (
-                    <button
-                        disabled={loading}
-                        onClick={handleBorrow}
-                        className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                        {loading ? 'Loading...' : 'Borrow'}
-                    </button>
-                )
-            }
         }
+
+        const borrowed = borrows.some(b => b.book_id === book.id && !b.is_returned);
+
+        return (
+            <button
+                disabled={loading}
+                onClick={borrowed ? handleReturn : handleBorrow}
+                className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                {loading ? 'Loading...' : borrowed ? 'Return' : 'Borrow'}
+            </button>
+        )
     }
+
 
 
     const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });
