@@ -29,21 +29,67 @@ export function BookCard({ book }: props) {
         try {
             store.getAll(store.current_page);
             const response = await borrowService.borrow(book.id);
+            get();
             console.log(response);
         } catch (err: any) {
             console.error(err);
         }
     }
 
-    useEffect(() => {
-        const get = async () => {
-            const response = await borrowService.getMyBorrows();
-            if (response.data.data){
-                setBorrows(response.data.data);
-            }
+    const handleReturn = async () => {
+        try {
+            store.getAll(store.current_page);
+            const response = await borrowService.returnBook(book.id);
+            get();
+            console.log(response);
+        } catch (err: any) {
+            console.error(err);
         }
+    }
+
+    const get = async () => {
+        const response = await borrowService.getMyBorrows();
+        if (response.data.data) {
+            setBorrows(response.data.data);
+        }
+    }
+
+    useEffect(() => {
         get();
     }, []);
+
+
+    const getButton = () => {
+        if (role === 'admin') {
+            return (
+                <div className="flex flex-col gap-4 h-full justify-between">
+                    <button onClick={() => setShowEdit(!showEdit)}
+                        className="text-2xl text-blue-500 cursor-pointer hover:text-blue-800 transition-all">
+                        <Edit />
+                    </button>
+                    <button onClick={handleDelete} className="text-2xl text-red-500 cursor-pointer hover:text-red-800 transition-all">
+                        <Trash />
+                    </button>
+                </div>
+            )
+        } else {
+            if (borrows.find(borrow => borrow.book_id === book.id && borrow.is_returned === false)) {
+                return (
+                    <button onClick={handleReturn}
+                        className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                        Return
+                    </button>
+                )
+            } else if (book.quantity > 0) {
+                return (
+                    <button onClick={handleBorrow}
+                        className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                        Borrow
+                    </button>
+                )
+            }
+        }
+    }
 
     console.log(borrows);
 
@@ -52,7 +98,7 @@ export function BookCard({ book }: props) {
 
     return (
         <>
-        {showEdit && <EditBook handle={() => setShowEdit(!showEdit)} book={book} />}
+            {showEdit && <EditBook handle={() => setShowEdit(!showEdit)} book={book} />}
             <div className="group relative overflow-hidden rounded-lg border bg-dun p-6 transition-all hover:shadow-lg">
                 <div className="flex gap-6">
                     {/* Book Cover */}
@@ -106,28 +152,8 @@ export function BookCard({ book }: props) {
                             </div>
                         </div>
                         {
-                            role === 'user' && (
-                                <button onClick={handleBorrow}
-                                className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                                    Borrow
-                                </button>
-                            )
+                            getButton()
                         }
-                        
-                        {
-                            role === 'admin' && (
-                                <div className="flex flex-col gap-4 h-full justify-between">
-                                    <button onClick={() => setShowEdit(!showEdit)}
-                                    className="text-2xl text-blue-500 cursor-pointer hover:text-blue-800 transition-all">
-                                        <Edit />
-                                    </button>
-                                    <button onClick={handleDelete} className="text-2xl text-red-500 cursor-pointer hover:text-red-800 transition-all">
-                                        <Trash />
-                                    </button>
-                                </div>
-                            )
-                        }
-
                     </div>
                 </div>
             </div>

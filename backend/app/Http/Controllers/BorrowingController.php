@@ -15,7 +15,10 @@ class BorrowingController extends Controller
      */
     public function index(): JsonResponse
     {
-        return ApiResponse::success([Borrowing::with('book', 'user')->get()]);
+
+        $borrowings = Borrowing::with('book', 'user')->where('is_returned', '=', false)->get();
+
+        return ApiResponse::success($borrowings);
     }
 
     /**
@@ -38,17 +41,33 @@ class BorrowingController extends Controller
         return ApiResponse::success($borrowing, 'Book borrowed successfully', 201);
     }
 
-    public function returnBook(Borrowing $borrowing): JsonResponse
+    public function returnBook(Request $request, Book $book): JsonResponse
     {
-        if ($borrowing->return_date) {
-            return ApiResponse::error('Book is already returned', 400);
-        }
+        // if ($borrowing->return_date) {
+        //     return ApiResponse::error('Book is already returned', 400);
+        // }
 
-        $borrowing->update(['return_date' => now()]);
+        // $borrowing->update(['return_date' => now()]);
+
+        // if ($borrowing->book) {
+        //     $borrowing->book->increment('quantity');
+        // }
+
+        // return ApiResponse::success($borrowing, 'Book returned successfully');
+
+        $borrowing = $book->borrowings()->whereUserId($request->user()->id)->whereIsReturned(false)->first();
+
+        if (!$borrowing->exists()) {
+            return ApiResponse::error('Book is not borrowed by you', 400);
+        }
 
         if ($borrowing->book) {
             $borrowing->book->increment('quantity');
         }
+
+        $borrowing->is_returned = true;
+        $borrowing->return_date = now();
+        $borrowing->save();
 
         return ApiResponse::success($borrowing, 'Book returned successfully');
     }

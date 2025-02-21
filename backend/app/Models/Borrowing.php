@@ -11,6 +11,7 @@ class Borrowing extends Model
         'book_id',
         'borrow_date',
         'return_date',
+        'is_returned',
     ];
 
     public function book()

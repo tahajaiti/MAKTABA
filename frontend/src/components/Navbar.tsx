@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
                             <Link to='/login' className="cursor-pointer bg-dun hover:bg-dun/50 text-jet px-4 py-2 rounded-md transition duration-300">
                                 Login
                             </Link>
-                            <Link to="/signup" className="cursor-pointer bg-transparent border border-jet text-dun hover:bg-dun/50 hover:text-white px-4 py-2 rounded-md transition duration-300">
+                            <Link to="/register" className="cursor-pointer bg-transparent border border-jet text-dun hover:bg-dun/50 hover:text-white px-4 py-2 rounded-md transition duration-300">
                                 Register
                             </Link>
                         </>

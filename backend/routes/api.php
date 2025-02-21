@@ -20,6 +20,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('borrowings', [BorrowingController::class, 'index'])->name('borrowings.index');
     Route::post('borrow/{book}', [BorrowingController::class, 'store'])->name('borrowings.store');
-    Route::patch('return/{borrowing}', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
+    Route::patch('return/{book}', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
     Route::get('my-borrows', [BorrowingController::class, 'userBorrows'])->name('borrowings.user');
 });;
