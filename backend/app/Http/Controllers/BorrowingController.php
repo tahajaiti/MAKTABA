@@ -23,7 +23,7 @@ class BorrowingController extends Controller
      */
     public function store(Request $request, Book $book): JsonResponse
     {
-        if ($book->quantity < 1){
+        if ($book->quantity < 1) {
             return ApiResponse::error('Book is out of stock', 400);
         }
 
@@ -38,18 +38,23 @@ class BorrowingController extends Controller
         return ApiResponse::success($borrowing, 'Book borrowed successfully', 201);
     }
 
-   public function returnBook(Borrowing $borrowing): JsonResponse
-   {
-       if ($borrowing->return_date) {
-           return ApiResponse::error('Book is already returned', 400);
-       }
+    public function returnBook(Borrowing $borrowing): JsonResponse
+    {
+        if ($borrowing->return_date) {
+            return ApiResponse::error('Book is already returned', 400);
+        }
 
-       $borrowing->update(['return_date' => now()]);
+        $borrowing->update(['return_date' => now()]);
 
-       if ($borrowing->book){
-           $borrowing->book->increment('quantity');
-       }
+        if ($borrowing->book) {
+            $borrowing->book->increment('quantity');
+        }
 
-       return ApiResponse::success($borrowing, 'Book returned successfully');
-   }
+        return ApiResponse::success($borrowing, 'Book returned successfully');
+    }
+
+    public function userBorrows(Request $request): JsonResponse
+    {
+        return ApiResponse::success($request->user()->borrowings()->with('book')->get());
+    }
 }

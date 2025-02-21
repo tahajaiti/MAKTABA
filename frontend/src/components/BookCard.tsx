@@ -1,10 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Book, Calendar, Edit, Hash, Trash, User } from "lucide-react"
 import { formatDistance } from "date-fns"
 import BookType from "../types/Book"
 import { useBookStore } from "../stores/bookStore"
 import { useAuthStore } from "../stores/authStore"
 import EditBook from "./EditBook"
+import borrowService from "../services/borrowService"
+import Borrow from "../types/Borrow"
 
 interface props {
     book: BookType
@@ -14,6 +16,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function BookCard({ book }: props) {
     const [showEdit, setShowEdit] = useState(false);
+    const [borrows, setBorrows] = useState<Borrow[]>([]);
     const { role } = useAuthStore();
     const store = useBookStore();
     const imageUrl = book.cover ? `${API_URL}/${book.cover}` : "/placeholder.jpg";
@@ -21,6 +24,29 @@ export function BookCard({ book }: props) {
     const handleDelete = () => {
         store.delete(book.id);
     }
+
+    const handleBorrow = async () => {
+        try {
+            store.getAll(store.current_page);
+            const response = await borrowService.borrow(book.id);
+            console.log(response);
+        } catch (err: any) {
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        const get = async () => {
+            const response = await borrowService.getMyBorrows();
+            if (response.data.data){
+                setBorrows(response.data.data);
+            }
+        }
+        get();
+    }, []);
+
+    console.log(borrows);
+
 
     const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });
 
@@ -71,7 +97,7 @@ export function BookCard({ book }: props) {
                                 <div className="flex items-center gap-2 text-sm text-gris">
                                     <Edit className="h-4 w-4" />
                                     <span>
-                                        Last updated{" "}
+                                        Last borrowing{" "}
                                         {formatDistance(new Date(book.updated_at), new Date(), {
                                             addSuffix: true,
                                         })}
@@ -81,7 +107,8 @@ export function BookCard({ book }: props) {
                         </div>
                         {
                             role === 'user' && (
-                                <button className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                                <button onClick={handleBorrow}
+                                className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
                                     Borrow
                                 </button>
                             )
