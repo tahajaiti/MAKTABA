@@ -16,16 +16,32 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function BookCard({ book }: props) {
     const [showEdit, setShowEdit] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [borrows, setBorrows] = useState<Borrow[]>([]);
     const { role } = useAuthStore();
     const store = useBookStore();
     const imageUrl = book.cover ? `${API_URL}/${book.cover}` : "/placeholder.jpg";
+
+
+    const get = async () => {
+        setLoading(true);
+        const response = await borrowService.getMyBorrows();
+        if (response.data.data) {
+            setBorrows(response.data.data);
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        get();
+    }, []);
 
     const handleDelete = () => {
         store.delete(book.id);
     }
 
     const handleBorrow = async () => {
+        setLoading(true);
         try {
             store.getAll(store.current_page);
             const response = await borrowService.borrow(book.id);
@@ -33,10 +49,13 @@ export function BookCard({ book }: props) {
             console.log(response);
         } catch (err: any) {
             console.error(err);
+        } finally {
+            setLoading(false);
         }
     }
 
     const handleReturn = async () => {
+        setLoading(true);
         try {
             store.getAll(store.current_page);
             const response = await borrowService.returnBook(book.id);
@@ -44,19 +63,10 @@ export function BookCard({ book }: props) {
             console.log(response);
         } catch (err: any) {
             console.error(err);
+        } finally {
+            setLoading(false);
         }
     }
-
-    const get = async () => {
-        const response = await borrowService.getMyBorrows();
-        if (response.data.data) {
-            setBorrows(response.data.data);
-        }
-    }
-
-    useEffect(() => {
-        get();
-    }, []);
 
 
     const getButton = () => {
@@ -75,26 +85,50 @@ export function BookCard({ book }: props) {
         } else {
             if (borrows.find(borrow => borrow.book_id === book.id && borrow.is_returned === false)) {
                 return (
-                    <button onClick={handleReturn}
+                    <button
+                        disabled={loading}
+                        onClick={handleReturn}
                         className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                        Return
+                        {loading ? 'Loading...' : 'Return'}
                     </button>
                 )
             } else if (book.quantity > 0) {
                 return (
-                    <button onClick={handleBorrow}
+                    <button
+                        disabled={loading}
+                        onClick={handleBorrow}
                         className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
-                        Borrow
+                        {loading ? 'Loading...' : 'Borrow'}
                     </button>
                 )
             }
         }
     }
 
-    console.log(borrows);
-
 
     const timeAgo = formatDistance(new Date(book.created_at), new Date(), { addSuffix: true });
+
+    if (loading) {
+        return (
+            <div className="group relative overflow-hidden rounded-lg border bg-dun p-6 transition-all hover:shadow-lg animate-pulse">
+                <div className="flex gap-6">
+                    <div className="relative h-[180px] w-[120px] shrink-0 overflow-hidden rounded-md border bg-gray-200"></div>
+                    <div className="flex flex-col justify-between w-full">
+                        <div className="space-y-2">
+                            <div className="h-6 w-3/4 bg-gray-200 rounded"></div>
+                            <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+                            <div className="h-4 w-1/3 bg-gray-200 rounded"></div>
+                            <div className="h-4 w-1/4 bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+                            <div className="h-3 w-1/3 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <>
