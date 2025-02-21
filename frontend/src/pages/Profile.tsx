@@ -160,6 +160,10 @@ const Profile: React.FC = () => {
                                             return (
                                                 <BookCard key={b.book.id} book={b.book} />
                                             )
+                                        } else {
+                                            return (
+                                                <p className="text-night">No borrowings found.</p>
+                                            )
                                         }
                                     })
                                 ) : (
