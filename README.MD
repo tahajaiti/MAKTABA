@@ -21,7 +21,7 @@ Mektaba is a single-page application (SPA) built with **React** and **TypeScript
 
 - **Laravel API:**
   - Designed without major packages, except for **CORS** to allow frontend-backend communication.
-  - **Role-based Access Control (RBAC):** Implemented a `roles` table to manage user permissions effectively.
+  - **Role-based System:** Implemented a `roles` table to manage user roles effectively.
   - **Seeders:** Used seeders to speed up development and populate the database.
   - **Resources & API Responses:**
     - Created a **User Resource** to structure API responses properly.
