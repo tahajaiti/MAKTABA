@@ -6,6 +6,7 @@ import Books from './pages/Books';
 import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Profile from './pages/Profile';
 
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
             <Route index element={<Home />} />
             <Route path="books" element={<Books />} />
             <Route path="about" element={<About />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
