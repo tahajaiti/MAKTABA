@@ -11,7 +11,7 @@ class ApiResponse
             'status' => 'success',
             'message' => $message,
             'data' => $data,
-        ]);
+        ], $code);
     }
 
     public static function error($message, $code = 400): \Illuminate\Http\JsonResponse {
@@ -19,7 +19,7 @@ class ApiResponse
             'status' => 'error',
             'message' => $message,
             'data' => null,
-        ]);
+        ], $code);
     }
 
 

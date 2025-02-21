@@ -15,7 +15,7 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        return ApiResponse::success(Book::paginate(6));
+        return ApiResponse::success(Book::orderBy('id', 'asc')->paginate(6));
     }
 
     /**
@@ -59,31 +59,19 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(Book $book, Request $request): JsonResponse
     {
         $request->validate([
             'title' => 'string|max:255|min:3',
             'author' => 'string|max:255|min:3',
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'quantity' => 'integer|min:1',
         ]);
-
-        $book = Book::find($id);
 
         if (!$book) {
             return ApiResponse::error('Book does not exist', 404);
         }
 
-        if ($request->hasFile('cover')) {
-            if ($book->cover) {
-                Storage::disk('public')->delete($book->cover);
-            }
-
-            $path = $request->file('cover')->store('covers', 'public');
-            $book->cover = $path;
-        }
-
-        $book->update($request->except('cover'));
+        $book->update($request->all());
 
         return ApiResponse::success($book, 'Book updated successfully');
     }
