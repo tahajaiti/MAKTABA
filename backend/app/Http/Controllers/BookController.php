@@ -15,7 +15,7 @@ class BookController extends Controller
      */
     public function index(): JsonResponse
     {
-        return ApiResponse::success(Book::all());
+        return ApiResponse::success(Book::paginate(6));
     }
 
     /**
@@ -62,10 +62,10 @@ class BookController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         $request->validate([
-           'title' => 'string|max:255|min:3',
-           'author' => 'string|max:255|min:3',
-           'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-           'quantity' => 'integer|min:1',
+            'title' => 'string|max:255|min:3',
+            'author' => 'string|max:255|min:3',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'quantity' => 'integer|min:1',
         ]);
 
         $book = Book::find($id);
@@ -74,8 +74,8 @@ class BookController extends Controller
             return ApiResponse::error('Book does not exist', 404);
         }
 
-        if ($request->hasFile('cover')){
-            if ($book->cover){
+        if ($request->hasFile('cover')) {
+            if ($book->cover) {
                 Storage::disk('public')->delete($book->cover);
             }
 
