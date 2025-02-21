@@ -79,7 +79,14 @@ export function BookCard({ book }: props) {
                                 </div>
                             </div>
                         </div>
-
+                        {
+                            role === 'user' && (
+                                <button className="bg-jet self-start cursor-pointer hover:bg-dun/50 hover:border-jet hover:border hover:text-jet transition-all text-white px-4 py-2 rounded-lg">
+                                    Borrow
+                                </button>
+                            )
+                        }
+                        
                         {
                             role === 'admin' && (
                                 <div className="flex flex-col gap-4 h-full justify-between">
