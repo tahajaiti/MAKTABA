@@ -1,4 +1,7 @@
+import Book from "./Book";
+
 interface Borrow {
+    book: Book | null;
     user_id: number;
     book_id: number;
     borrow_date: string;

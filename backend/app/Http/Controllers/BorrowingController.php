@@ -76,4 +76,5 @@ class BorrowingController extends Controller
     {
         return ApiResponse::success($request->user()->borrowings()->with('book')->get());
     }
+
 }

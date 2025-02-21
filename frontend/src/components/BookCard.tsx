@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Book, Calendar, Edit, Hash, Trash, User } from "lucide-react"
 import { formatDistance } from "date-fns"
 import BookType from "../types/Book"
@@ -52,6 +52,7 @@ export function BookCard({ book }: props) {
             await borrowService.borrow(book.id);
             if (user && user.id) {
                 const borrow = {
+                    book: null,
                     user_id: user.id,
                     book_id: book.id,
                     return_date: '',
