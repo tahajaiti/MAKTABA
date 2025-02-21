@@ -4,15 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { formatDistance } from "date-fns"
 
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    created_at: Date;
-    updated_at: Date;
-}
-
 const Profile: React.FC = () => {
     const { user, logout } = useAuthStore();
     const navigate = useNavigate();
